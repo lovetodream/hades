@@ -4,6 +4,10 @@ import Vapor
 
 // configures your application
 public func configure(_ app: Application) throws {
+    app.logger.logLevel = .debug
+
+    app.http.server.configuration.port = Environment.get("PORT").flatMap(Int.init(_:)) ?? 8080
+
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
@@ -19,4 +23,6 @@ public func configure(_ app: Application) throws {
 
     // register routes
     try routes(app)
+
+    try app.autoMigrate().wait()
 }
