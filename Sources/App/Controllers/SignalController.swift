@@ -40,22 +40,30 @@ struct SignalController: RouteCollection {
     }
 
     func findAll(_ req: Request) async throws -> [Signal] {
-        try await Signal.query(on: req.db).all()
+        try await Signal.query(on: req.db).with(\.$payload).all()
     }
 
     func create(_ req: Request) async throws -> Signal {
         let create = try req.content.decode(Signal.Create.self)
-        let signal = Signal(type: create.type, clientUserID: create.clientUserID, createdAt: create.createdAt ?? .now)
+        let signal = Signal(type: create.type,
+                            clientUserID: create.clientUserID,
+                            createdAt: create.createdAt ?? .now)
         try await signal.create(on: req.db)
         for (key, value) in create.payload {
-            let payload = try Payload(signal: signal, key: key, value: value)
+            let payload = try Payload(signal: signal,
+                                      key: key,
+                                      value: value)
             try await payload.create(on: req.db)
         }
         return signal
     }
 
     func findOne(_ req: Request) async throws -> Signal {
-        guard let signal = try await Signal.find(req.parameters.get("id"), on: req.db) else {
+        guard let idString = req.parameters.get("id"),
+              let id = UUID(uuidString: idString),
+              let signal = try await Signal.query(on: req.db)
+                                           .filter(\.$id == id)
+                                           .with(\.$payload).first() else {
             throw Abort(.notFound)
         }
         return signal
