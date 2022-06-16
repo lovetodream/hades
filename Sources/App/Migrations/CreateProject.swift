@@ -1,5 +1,5 @@
 //
-//  CreateSignal.swift
+//  CreateProject.swift
 //  Hades
 // 
 // 
@@ -28,19 +28,17 @@
 
 import Fluent
 
-struct CreateSignal: AsyncMigration {
+struct CreateProject: AsyncMigration {
     func prepare(on database: Database) async throws {
-        try await database.schema(Signal.schema)
+        try await database.schema(Project.schema)
             .id()
-            .field("type", .string, .required)
-            .field("client_user_id", .string)
-            .field("received_at", .datetime)
+            .field("name", .string, .required)
             .field("created_at", .datetime)
-            .field("project_id", .uuid, .references(Project.schema, "id"))
+            .field("updated_at", .datetime)
             .create()
     }
 
     func revert(on database: Database) async throws {
-        try await database.schema(Signal.schema).delete()
+        try await database.schema(Project.schema).delete()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CreateSignal.swift
+//  Project.swift
 //  Hades
 // 
 // 
@@ -26,21 +26,31 @@
 //  SOFTWARE.
 //
 
+import Vapor
 import Fluent
 
-struct CreateSignal: AsyncMigration {
-    func prepare(on database: Database) async throws {
-        try await database.schema(Signal.schema)
-            .id()
-            .field("type", .string, .required)
-            .field("client_user_id", .string)
-            .field("received_at", .datetime)
-            .field("created_at", .datetime)
-            .field("project_id", .uuid, .references(Project.schema, "id"))
-            .create()
-    }
+final class Project: Model {
+    static let schema = "project"
 
-    func revert(on database: Database) async throws {
-        try await database.schema(Signal.schema).delete()
+    @ID
+    var id: UUID?
+
+    @Field(key: "name")
+    var name: String
+
+    @Children(for: \.$project)
+    var signals: [Signal]
+
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
+
+    @Timestamp(key: "updated_at", on: .update)
+    var updatedAt: Date?
+
+    init() {}
+
+    init(id: UUID? = nil, name: String) {
+        self.id = id
+        self.name = name
     }
 }

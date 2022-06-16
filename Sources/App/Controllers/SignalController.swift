@@ -47,7 +47,8 @@ struct SignalController: RouteCollection {
         let create = try req.content.decode(Signal.Create.self)
         let signal = Signal(type: create.type,
                             clientUserID: create.clientUserID,
-                            createdAt: create.createdAt ?? .now)
+                            createdAt: create.createdAt ?? .now,
+                            projectID: create.projectID)
         try await signal.create(on: req.db)
         for (key, value) in create.payload {
             let payload = try Payload(signal: signal,

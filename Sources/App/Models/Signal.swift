@@ -41,6 +41,9 @@ final class Signal: Model, Content {
     @Field(key: "client_user_id")
     var clientUserID: String?
 
+    @Parent(key: "project_id")
+    var project: Project
+
     @Children(for: \.$signal)
     var payload: [Payload]
 
@@ -51,20 +54,34 @@ final class Signal: Model, Content {
     @Timestamp(key: "created_at", on: .none)
     var createdAt: Date?
 
-    @Timestamp(key: "updated_at", on: .update)
-    var updatedAt: Date?
-
     init() {}
 
-    init(id: UUID? = nil, type: String, clientUserID: String?, createdAt: Date?) {
+    init(id: UUID? = nil,
+         type: String,
+         clientUserID: String?,
+         createdAt: Date?,
+         projectID: Project.IDValue) {
         self.id = id
         self.type = type
         self.clientUserID = clientUserID
         self.createdAt = createdAt
-        
+        self.$project.id = projectID
+    }
+
+    convenience init(id: UUID? = nil,
+                     type: String,
+                     clientUserID: String?,
+                     createdAt: Date?,
+                     project: Project) throws {
+        self.init(id: id,
+                  type: type,
+                  clientUserID: clientUserID,
+                  createdAt: createdAt,
+                  projectID: try project.requireID())
     }
 
     struct Create: Content {
+        var projectID: UUID
         var type: String
         var clientUserID: String?
         var payload: [String: String]

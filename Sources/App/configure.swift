@@ -19,7 +19,7 @@ public func configure(_ app: Application) throws {
         database: Environment.get("DATABASE_NAME") ?? "vapor_database"
     ), as: .psql)
 
-    app.migrations.add(CreateSignal(), CreatePayload())
+    app.migrations.add(CreateProject(), CreateSignal(), CreatePayload())
 
     // register routes
     try routes(app)
