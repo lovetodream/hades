@@ -10,7 +10,7 @@ let package = Package(
         // 💧 A server-side Swift web framework.
         .package(url: "https://github.com/vapor/vapor.git", from: "4.62.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.4.0"),
-        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.3.0"),
+        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.4.0"),
     ],
     targets: [
         .target(
